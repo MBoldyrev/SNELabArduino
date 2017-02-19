@@ -2,13 +2,18 @@
 #include <SPI.h>
 #include "nRF24L01.h"
 #include "RF24.h"
+#include "printf.h"
 
-RF24 radio(9, 10);
-const uint64_t pipe1 = 0xE8E8F0F0E1LL;
+RF24 radio(9,10);
+const uint64_t pipe = 0xE8E8F0F0E1LL;
 char cmd[8] = {0xAA};
 
-void setup() {
+
+void setup(void)
+{
   Serial.begin(9600);
+  printf_begin();
+  Serial.println( "Setup start" );
   //
   // Setup radio pipe
   //
@@ -21,9 +26,10 @@ void setup() {
   radio.setRetries(3, 30);                 // Optionally, increase the delay between retries & # of retries
   radio.powerUp();
 
-  radio.openWritingPipe(pipe1);
+  radio.openWritingPipe(pipe);
 
   radio.printDetails();
+  Serial.println( "Setup end" );
 }
 
 void loop() {
@@ -32,11 +38,15 @@ void loop() {
     cmd[0] = Serial.read();
 //    if ( cmd[0] == 'o' ) {
       //while  ( !radio.write( &cmd, 8 ) );
-    radio.write( cmd, 8 );
-    delay(100);
-    Serial.write( "Sent opening command...\r\n" );
     Serial.println( cmd[0] );
+    Serial.write( "Sending opening command..." );
+    bool ok = radio.write( cmd, 1 );
+    if (ok)
+      Serial.println("ok");
+    else
+      Serial.println("failed");
     Serial.flush();
+    delay(100);
       //   pinMode(lock_pin, OUTPUT);
       //   digitalWrite(lock_pin, LOW);
       //   delay(1000);

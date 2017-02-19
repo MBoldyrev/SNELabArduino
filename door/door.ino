@@ -1,15 +1,19 @@
 #include <SPI.h>
 #include "nRF24L01.h"
 #include "RF24.h"
-#include "stdio.h"
+#include "printf.h"
 
 int lock_pin = 2;
 
 RF24 radio(9,10);
 const uint64_t pipe = 0xE8E8F0F0E1LL;
-char cmd[8] = {0};
+char cmd[8] = {0xAA};
 
 void setup() {
+  Serial.begin(9600);
+  printf_begin();
+  Serial.println( "Setup start" );
+  
   radio.begin();
 
   radio.setPALevel(RF24_PA_LOW); // one of RF24_PA_MIN, RF24_PA_LOW, RF24_PA_HIGH and RF24_PA_MAX
@@ -21,9 +25,12 @@ void setup() {
   
   radio.openReadingPipe(1,pipe);
   radio.startListening();
+  radio.printDetails();
   
-  Serial.begin(9600);
+
   pinMode(lock_pin, INPUT);
+  
+  Serial.println( "Setup end" );
 }
 
 void loop() {
@@ -34,7 +41,7 @@ void loop() {
     while (radio.available())
     {
       // Fetch the payload, and see if this was the last one.
-      radio.read( cmd, 8 );
+      radio.read( cmd, 1 );
       Serial.write( "Got command...\r\n" );
       Serial.println( cmd[0] );
       delay(100);
