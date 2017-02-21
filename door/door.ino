@@ -28,8 +28,10 @@ void setup() {
   radio.printDetails();
   
 
-  pinMode(lock_pin, INPUT);
-  
+  //pinMode(lock_pin, INPUT);
+  pinMode(lock_pin, OUTPUT);
+  digitalWrite(lock_pin, LOW);
+    
   Serial.println( "Setup end" );
 }
 
@@ -48,10 +50,11 @@ void loop() {
       Serial.flush();
       if( cmd[0] == 'o' ) {
         Serial.write( "Opening...\r\n" );
-        pinMode(lock_pin, OUTPUT);
-        digitalWrite(lock_pin, LOW);
+        //pinMode(lock_pin, OUTPUT);
+        digitalWrite(lock_pin, HIGH);
         delay(1000);
-        pinMode(lock_pin, INPUT);
+        digitalWrite(lock_pin, LOW);
+        //pinMode(lock_pin, INPUT);
       }
     }
   }
